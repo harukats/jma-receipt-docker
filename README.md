@@ -7,6 +7,7 @@
 ## Usage
 
 ```console
-cd orca-docker
+git clone https://github.com/harukats/jma-receipt-docker
+cd jma-receipt-docker
 docker-compose up -d --build
 ```
