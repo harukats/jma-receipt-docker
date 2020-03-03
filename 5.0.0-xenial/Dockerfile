@@ -49,9 +49,9 @@ RUN rm -f /etc/supervisor/conf.d/pusher.conf
 COPY files/passwd_force_update.sh /usr/lib/jma-receipt/bin/passwd_force_update.sh
 RUN chmod +x /usr/lib/jma-receipt/bin/passwd_force_update.sh
 
-# copy docker-entrypoint script
-COPY files/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# copy start script
+COPY files/jma-receipt.sh /usr/local/bin/jma-receipt.sh
+RUN chmod +x /usr/local/bin/jma-receipt.sh
 
 # create data volume
 RUN mkdir -p /data/etc /data/lib /data/log /usr/local/lib/push-exchanger/plugin \
@@ -67,4 +67,4 @@ VOLUME [ "/data" ]
 # expose
 EXPOSE 8000
 
-CMD [ "docker-entrypoint.sh" ]
+CMD [ "jma-receipt.sh" ]
