@@ -69,8 +69,6 @@ ENV LANG=ja_JP.UTF-8 \
     ORCA_DB_PORT=5432 \
     ORCA_DB_ENCODING=EUC-JP
 
-VOLUME [ "/data" ]
-
 # expose
 EXPOSE 8000
 
