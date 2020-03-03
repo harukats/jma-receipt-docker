@@ -14,7 +14,6 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
       sudo wget ca-certificates gnupg supervisor uuid-runtime qpdf \
-    && apt-get -y dist-upgrade \
     && wget -q \
       https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz -O - \
       | tar -xz -C /usr/local/bin
