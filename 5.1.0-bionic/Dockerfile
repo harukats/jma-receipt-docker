@@ -10,9 +10,15 @@ ENV ORCA_DISTRIBUTION=bionic51 \
 # set timezone to JST
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
-# install pre-require packages and dockerize
+# set locale
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends \
+    && apt-get install locales \
+    && sed -i 's/^# ja_JP/ja_JP/' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=ja_JP.UTF-8
+
+# install pre-require packages and dockerize
+RUN apt-get -y install --no-install-recommends \
       sudo wget ca-certificates gnupg supervisor uuid-runtime qpdf \
     && wget -q \
       https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz -O - \
@@ -53,7 +59,8 @@ RUN mkdir -p /data/etc /data/lib /data/log /usr/local/lib/push-exchanger/plugin 
     && ln -sf /data/log/jma-receipt /var/log/jma-receipt
 
 # runtime env
-ENV ORMASTER_PASS=ormaster \
+ENV LANG=ja_JP.UTF-8 \
+    ORMASTER_PASS=ormaster \
     ORMASTER_PASS_RESET=false \
     ORCA_DB_NAME=orca \
     ORCA_DB_USER=orca \
