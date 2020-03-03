@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  jma-receipt:
+  orca:
     build:
       context: .
       dockerfile: ./5.1.0-bionic/Dockerfile
