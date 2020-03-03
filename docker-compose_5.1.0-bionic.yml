@@ -26,7 +26,7 @@ services:
       - orca_data:/data
 
   db:
-    image: postgres:9.6-alpine
+    image: postgres:10-alpine
     environment:
       TZ: Asia/Tokyo
       # Please change DB user and password, same as above.

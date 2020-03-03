@@ -13,7 +13,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 # install pre-require packages and dockerize
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
-      sudo wget ca-certificates gnupg supervisor uuid-runtime \
+      sudo wget ca-certificates gnupg supervisor uuid-runtime qpdf \
     && apt-get -y dist-upgrade \
     && wget -q \
       https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz -O - \
