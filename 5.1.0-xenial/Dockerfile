@@ -2,24 +2,15 @@ FROM ubuntu:xenial
 
 LABEL maintainer 'harukats <github.com/harukats>'
 
-# env
-ENV ORMASTER_PASS=ormaster \
-    ORMASTER_PASS_RESET=false \
-    ORCA_DB_NAME=orca \
-    ORCA_DB_USER=orca \
-    ORCA_DB_PASS="" \
-    ORCA_DB_HOST=localhost \
-    ORCA_DB_PORT=5432 \
-    ORCA_DB_ENCODING=EUC-JP \
-    ORCA_VERSION=5.1 \
-    ORCA_DISTRIBUTION=xenial51 \
+# build env
+ENV ORCA_DISTRIBUTION=xenial51 \
     DOCKERIZE_VERSION=v0.6.1 \
     DEBIAN_FRONTEND=noninteractive
 
 # set timezone to JST
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
-# install sudo, wget, ca-certificates, gnupg, supervisor and dockerize
+# install pre-require packages and dockerize
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
       sudo wget ca-certificates gnupg supervisor uuid-runtime qpdf \
@@ -61,6 +52,16 @@ RUN mkdir -p /data/etc /data/lib /data/log /usr/local/lib/push-exchanger/plugin 
     && ln -sf /data/etc/jma-receipt /etc/jma-receipt \
     && ln -sf /data/lib/jma-receipt /var/lib/jma-receipt \
     && ln -sf /data/log/jma-receipt /var/log/jma-receipt
+
+# runtime env
+ENV ORMASTER_PASS=ormaster \
+    ORMASTER_PASS_RESET=false \
+    ORCA_DB_NAME=orca \
+    ORCA_DB_USER=orca \
+    ORCA_DB_PASS="" \
+    ORCA_DB_HOST=localhost \
+    ORCA_DB_PORT=5432 \
+    ORCA_DB_ENCODING=EUC-JP
 
 VOLUME [ "/data" ]
 
