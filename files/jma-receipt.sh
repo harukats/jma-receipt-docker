@@ -2,52 +2,55 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+DB_CONF="
+export DBNAME=${ORCA_DB_NAME}\n
+export DBUSER=${ORCA_DB_USER}\n
+export DBPASS=${ORCA_DB_PASS}\n
+export DBHOST=${ORCA_DB_HOST}\n
+export DBPORT=${ORCA_DB_PORT}\n
+export PGHOST=${ORCA_DB_HOST}\n
+export PGUSER=${ORCA_DB_USER}\n
+export PGPASS=${ORCA_DB_PASS}\n
+export DBENCODING=${ORCA_DB_ENCODING}\n
+"
+DB_GROUP_INC="
+db_group {\n
+  type \"PostgreSQL\";\n
+  port \"${ORCA_DB_HOST}:${ORCA_DB_PORT}\";\n
+  name \"${ORCA_DB_NAME}\";\n
+  user \"${ORCA_DB_USER}\";\n
+  password \"${ORCA_DB_PASS}\";\n
+  redirect \"log\";\n
+};\n
+db_group \"log\" {\n
+  priority 100;\n
+  type \"PostgreSQL\";\n
+  port \"sub-jma-receipt\";\n
+  name \"${ORCA_DB_NAME}\";\n
+  file \"/var/lib/jma-receipt/dbredirector/orca.log\";\n
+  redirect_port \"localhost\";\n
+};\n
+"
+PGPASS="${ORCA_DB_HOST}:${ORCA_DB_PORT}:*:${ORCA_DB_USER}:${ORCA_DB_PASS}"
+
 if [ $ORCA_DB_HOST != "localhost" ]; then
   # create db.conf (overwrite)
-  cat << EOF > /etc/jma-receipt/db.conf
-export DBNAME="$ORCA_DB_NAME"
-export DBUSER="$ORCA_DB_USER"
-export DBPASS="$ORCA_DB_PASS"
-export DBHOST="$ORCA_DB_HOST"
-export DBPORT="$ORCA_DB_PORT"
-export PGHOST="$ORCA_DB_HOST"
-export PGUSER="$ORCA_DB_USER"
-export PGPASS="$ORCA_DB_PASS"
-export DBENCODING="$ORCA_DB_ENCODING"
-EOF
+  echo -e $DB_CONF > /etc/jma-receipt/db.conf
 
   # use db.conf as shell default profile
   cp /etc/jma-receipt/db.conf /etc/profile.d/jma-receipt.sh
 
   # create dbgroup.inc (overwrite)
-  cat << EOF > /etc/jma-receipt/dbgroup.inc
-db_group {
-  type "PostgreSQL";
-  port "$ORCA_DB_HOST:$ORCA_DB_PORT";
-  name "$ORCA_DB_NAME";
-  user "$ORCA_DB_USER";
-  password "$ORCA_DB_PASS";
-  redirect "log";
-};
-db_group "log" {
-  priority 100;
-  type "PostgreSQL";
-  port "sub-jma-receipt";
-  name "$ORCA_DB_NAME";
-  file "/var/lib/jma-receipt/dbredirector/orca.log";
-  redirect_port "localhost";
-};
-EOF
+  echo -e $DB_GROUP_INC > /etc/jma-receipt/dbgroup.inc
 
   # create .pgpass file
-  cat << EOF > /root/.pgpass
-$ORCA_DB_HOST:$ORCA_DB_PORT:*:$ORCA_DB_USER:$ORCA_DB_PASS
-EOF
+  echo $PGPASS > /root/.pgpass
   chmod 600 /root/.pgpass \
     && cp -a /root/.pgpass /home/orca/.pgpass \
     && chown orca:orca /home/orca/.pgpass
 else
-  echo "DBENCODING=\"$ORCA_DB_ENCODING\"" > /etc/jma-receipt/db.conf
+  # use local postgresql
+  echo "DBENCODING=${ORCA_DB_ENCODING}" > /etc/jma-receipt/db.conf
   /etc/init.d/postgresql start
 fi
 
