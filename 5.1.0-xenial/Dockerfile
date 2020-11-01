@@ -19,7 +19,7 @@ RUN apt-get update \
 
 # install pre-require packages and dockerize
 RUN apt-get -y install --no-install-recommends \
-      sudo wget ca-certificates gnupg supervisor uuid-runtime qpdf \
+      sudo wget ca-certificates gnupg supervisor uuid-runtime qpdf gcc \
     && wget -q \
       https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz -O - \
       | tar -xz -C /usr/local/bin
