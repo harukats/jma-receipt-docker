@@ -57,6 +57,12 @@ fi
 # setup ORCA database
 dockerize -wait tcp://$ORCA_DB_HOST:$ORCA_DB_PORT -timeout 60s jma-setup
 
+# change orca user password
+if [ $ORCA_DB_HOST == "localhost" ]; then
+  su - postgres \
+    -c "psql -c \"ALTER USER orca WITH LOGIN PASSWORD '${ORCA_DB_PASS}'\""
+fi
+
 # update ormaster password if passwd file doesn't exist or require reset
 if [ ! -e /etc/jma-receipt/passwd ] || "${ORMASTER_PASS_RESET}"; then
   echo "ormaster:$(md5pass $ORMASTER_PASS):" > /etc/jma-receipt/passwd
