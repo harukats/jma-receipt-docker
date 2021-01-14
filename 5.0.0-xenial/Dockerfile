@@ -4,6 +4,7 @@ LABEL maintainer 'harukats <github.com/harukats>'
 
 # build env
 ENV ORCA_DISTRIBUTION=xenial50 \
+    PG_VERSION=9.5 \
     DOCKERIZE_VERSION=v0.6.1 \
     DEBIAN_FRONTEND=noninteractive
 
@@ -49,13 +50,19 @@ RUN chmod +x /usr/lib/jma-receipt/bin/passwd_force_update.sh
 COPY files/jma-receipt.sh /usr/local/bin/jma-receipt.sh
 RUN chmod +x /usr/local/bin/jma-receipt.sh
 
+# custom postgresql options
+RUN echo "host all all all md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
+RUN echo "listen_addresses = '*'" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf
+
 # create data volume
 RUN mkdir -p /data/etc /data/lib /data/log /usr/local/lib/push-exchanger/plugin \
     && mv /etc/jma-receipt /data/etc \
     && mv /var/lib/jma-receipt /data/lib \
+    && mv /var/lib/postgresql /data/lib \
     && mv /var/log/jma-receipt /data/log \
     && ln -sf /data/etc/jma-receipt /etc/jma-receipt \
     && ln -sf /data/lib/jma-receipt /var/lib/jma-receipt \
+    && ln -sf /data/lib/postgresql /var/lib/postgresql \
     && ln -sf /data/log/jma-receipt /var/log/jma-receipt
 
 # runtime env
@@ -64,12 +71,12 @@ ENV LANG=ja_JP.UTF-8 \
     ORMASTER_PASS_RESET=false \
     ORCA_DB_NAME=orca \
     ORCA_DB_USER=orca \
-    ORCA_DB_PASS="" \
+    ORCA_DB_PASS=orca_password \
     ORCA_DB_HOST=localhost \
     ORCA_DB_PORT=5432 \
     ORCA_DB_ENCODING=EUC-JP
 
 # expose
-EXPOSE 8000
+EXPOSE 5432 8000 9400
 
 CMD [ "jma-receipt.sh" ]
